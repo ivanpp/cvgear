@@ -107,6 +107,7 @@ class DarknetParser:
         "softmax":          "_parse_softmax",
         "soft":             "_parse_softmax",
         "yolo":             "_parse_yolo",
+        "dropout":          "_parse_dropout",
     }
 
     def __init__(self, name: str):
@@ -335,6 +336,14 @@ class DarknetParser:
         options.local_anchors = [anchors[i] for i in options.indexes]
         self._set_input_shape(options)
 
+    def _parse_dropout(self, options: CfgNode):
+        """
+        Parse dropout layer
+        """
+        _set_default_with_type(options, float, "probability", .5)
+        self._set_input_shape(options)
+        self._set_output_shape(options, (self._params.c, self._params.h, self._params.w))
+
     def _parse_network(self):
         """
         Parse the entire network
@@ -457,8 +466,17 @@ class DarknetParser:
                     input="",
                     output="{}".format(options.classes)
                 )
+            elif options.name == "dropout":
+                tmpstr += template.format(
+                    idx=idx,
+                    name="dropout",
+                    filters="p={}".format(options.probability),
+                    size="",
+                    input="{}".format(options.w * options.h * options.c),
+                    output="{}".format(options.out_w * options.out_h * options.out_c)
+                )
             else:
-                tmpstr += "{:3} unspupported layer: {}\n".format(index, options.name)
+                tmpstr += "{:3} unspupported layer: {}\n".format(idx, options.name)
         return tmpstr
 
 
