@@ -1,5 +1,7 @@
 # CVGear
 
+[![version](https://img.shields.io/pypi/v/cvgear)](https://pypi.org/project/cvgear/)
+
 CVGear is simply computer vision gear, gear and gear.
 
 ## Install
